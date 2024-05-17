@@ -3,7 +3,7 @@
 @tailwind utilities;
 @import url('https://fonts.googleapis.com/css2?family=Poetsen+One&family=Roboto+Slab:wght@100..900&display=swap');
 
-/* @layer base {
+@layer base {
   [type='text'],
   [type='email'],
   [type='url'],
@@ -38,9 +38,9 @@
   }
 
   body {
-    @apply font-Opensans;
+    @apply font-sans;
   }
-} */
+}
 
 .customFont{
   font-family: "Poetsen One", sans-serif;

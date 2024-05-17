@@ -111,7 +111,7 @@ const InvoiceForm = () => {
       className="relative flex flex-col px-2 md:flex-row"
       onSubmit={reviewInvoiceHandler}
     >
-      <div className="my-6 flex-1 space-y-2  rounded-md bg-white p-4 shadow-sm sm:space-y-4 md:p-6">
+      <div className="my-6 flex-1 space-y-2  rounded-md bg-white p-4 shadow-sm sm:space-y-4 ">
         <div className="flex flex-col justify-between space-y-2 border-b border-gray-900/10 pb-4 md:flex-row md:items-center md:space-y-0">
           <div className="flex space-x-2">
             <span className="font-bold">Current Date: </span>
@@ -136,7 +136,7 @@ const InvoiceForm = () => {
         </div>
         <h1 className="text-center text-lg font-bold">INVOICE</h1>
         <div className="grid grid-cols-2 gap-5 pt-4 pb-8">
-          <div className="flex-col flex">
+          <div>
             <label
               htmlFor="cashierName"
               className="text-sm font-bold sm:text-base"
@@ -153,7 +153,7 @@ const InvoiceForm = () => {
               onChange={(event) => setCashierName(event.target.value)}
             />
           </div>
-          <div className="flex-col flex">
+          <div>
             <label
               htmlFor="customerName"
               className="text-sm font-bold md:text-base"
@@ -170,7 +170,7 @@ const InvoiceForm = () => {
               onChange={(event) => setCustomerName(event.target.value)}
             />
           </div>
-          <div className="flex-col flex">
+          <div>
             <label
               htmlFor="customerName"
               className="text-sm font-bold md:text-base"
@@ -187,7 +187,7 @@ const InvoiceForm = () => {
               onChange={(event) => setCustomerPhone(event.target.value)}
             />
           </div>
-          <div className="flex-col flex">
+          <div>
             <label
               htmlFor="customerName"
               className="text-sm font-bold md:text-base"
@@ -205,9 +205,9 @@ const InvoiceForm = () => {
             />
           </div>
         </div>
-        <table className="w-full p-4 text-left">
+        <table className="text-left">
           <thead>
-            <tr className="border-b border-gray-900/10 text-sm md:text-base">
+            <tr className="border-b ">
               <th>ITEM</th>
               <th className="text-center">QTY</th>
               <th className="text-center">PRICE</th>

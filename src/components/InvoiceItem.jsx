@@ -7,8 +7,8 @@ const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
   };
 
   return (
-    <tr className="">
-      <td className="">
+    <tr>
+      <td className="w-[50%]">
         <InvoiceField
           onEditItem={(event) => onEdtiItem(event)}
           cellData={{
@@ -21,7 +21,7 @@ const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
           }}
         />
       </td>
-      <td className="">
+      <td>
         <InvoiceField
           onEditItem={(event) => onEdtiItem(event)}
           cellData={{
