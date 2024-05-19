@@ -3,19 +3,21 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const invoice = createApi({
   reducerPath: "invoice",
-  baseQuery: fetchBaseQuery({ baseUrl: "https://fakestoreapi.com/products" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: "https://express-invoice-1.onrender.com/api/v1",
+  }),
 
   endpoints: (builder) => ({
     createInvoice: builder.mutation({
       query: (createInvoice) => ({
-        url: `/products/create`,
+        url: `/invoice`,
         method: "POST",
         body: createInvoice,
       }),
     }),
 
     getAllInvoice: builder.query({
-      query: () => "/",
+      query: () => "/invoice",
     }),
 
     getSingleBanner: builder.query({
@@ -40,6 +42,7 @@ export const invoice = createApi({
 });
 
 export const {
+  useCreateInvoiceMutation,
   useGetAllInvoiceQuery,
   useGetSingleBannerQuery,
   useUpdateBannerMutation,

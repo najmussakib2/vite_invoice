@@ -1,10 +1,11 @@
 /* eslint-disable react/prop-types */
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import img from "../../src/img/logo-ip.png";
 import Barcode from "react-barcode";
+import { useCreateInvoiceMutation } from "../redux/api/invoice/invoiceApi";
 // import Barcode from "react-barcode";
 
 const InvoiceModal = ({
@@ -17,13 +18,40 @@ const InvoiceModal = ({
   function closeModal() {
     setIsOpen(false);
   }
+  const [createInvoice] = useCreateInvoiceMutation()
 
-  const addNextInvoiceHandler = () => {
+  let serialNumberCounter = invoiceInfo.invoiceNumber;
+
+  function generateSerialNumber() {
+    const paddedCounter = serialNumberCounter.toString().padStart(7, "0");
+    return paddedCounter;
+  }
+ 
+  const info = {
+    cashier_name: invoiceInfo.cashierInfo.name,
+    customer_name: invoiceInfo.customerName,
+    customer_phone: invoiceInfo.customerPhone,
+    customer_address: invoiceInfo.customerAddress,
+    delivery_charge: invoiceInfo.deliCharge,
+    paid_amount: invoiceInfo.paidAmount,
+    note: invoiceInfo.note,
+    subTotal: invoiceInfo.subtotal,
+    total: invoiceInfo.total,
+    due: invoiceInfo.due,
+    items: items
+  }
+ 
+  const addNextInvoiceHandler = async () => {
     setIsOpen(false);
     onAddNextInvoice();
+    
+    const response = await createInvoice(info)
+    console.log(response)
   };
 
-  const SaveAsPDFHandler = () => {
+  console.log(info)
+
+  const SaveAsPDFHandler = async() => {
     const dom = document.getElementById("print");
     toPng(dom)
       .then((dataUrl) => {
@@ -94,12 +122,7 @@ const InvoiceModal = ({
     second: "numeric",
     hour12: true,
   });
-  let serialNumberCounter = invoiceInfo.invoiceNumber;
 
-  function generateSerialNumber() {
-    const paddedCounter = serialNumberCounter.toString().padStart(7, "0");
-    return paddedCounter;
-  }
 
   const Invoice = ({ copy }) => {
     return (
@@ -108,14 +131,16 @@ const InvoiceModal = ({
           <div className="col-span-1">
             <div className="">
               <p>Bill From</p>
-              <img className="my-4 w-20" src={img} alt="" />
+              <img className="my-4 w-20" src={invoiceInfo.cashierInfo.image} alt="" />
             </div>
 
-            <h2 className=" text-2xl font-bold">{invoiceInfo.cashierName}</h2>
+            <h2 className=" text-2xl font-bold">{invoiceInfo.cashierInfo.name}</h2>
             <h2 className="text-xl font-bold">COD</h2>
-            <p className="text-xs">Shop no 9/B (2nd Floor)</p>
-            <p className="text-xs">BTI Premier Plaza Shopping mall</p>
-            <p className="text-xs">North Badda, Dhaka 1212</p>
+
+            {invoiceInfo.cashierInfo.address && (
+              <div dangerouslySetInnerHTML={{ __html: invoiceInfo.cashierInfo.address }}/>
+            )}
+
             <p className="text-xs">
               <span className="font-bold">Phone No. </span> +8809611-595290
             </p>
@@ -125,7 +150,7 @@ const InvoiceModal = ({
           </div>
           <div className="col-span-1 text-right">
             <h1 className="text-3xl font-bold">INVOICE</h1>
-            <p>#IP{generateSerialNumber()}COD</p>
+            <p>{invoiceInfo.lastOrderId}COD</p>
 
             <p className="text-xs">Date: {today}</p>
             <div className="flex justify-end">
@@ -214,8 +239,8 @@ const InvoiceModal = ({
                 {isNaN(invoiceInfo.due)
                   ? "0.00"
                   : invoiceInfo.due % 1 === 0
-                  ? invoiceInfo.due
-                  : invoiceInfo.due.toFixed(2)}{" "}
+                    ? invoiceInfo.due
+                    : invoiceInfo.due.toFixed(2)}{" "}
                 BDT
               </span>
             </div>

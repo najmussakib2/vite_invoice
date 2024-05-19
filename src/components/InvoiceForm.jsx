@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { uid } from "uid";
 import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
 import incrementString from "../helpers/incrementString";
 import { useGetAllInvoiceQuery } from "../redux/api/invoice/invoiceApi";
+import icchaporon from "../../src/img/logo-ip.png";
+import ifashion from "../../src/img/I Fashion Logo.png";
+import mi from "../../src/img/images.png";
 const date = new Date();
 const today = date.toLocaleDateString("en-GB", {
   month: "numeric",
@@ -12,13 +15,43 @@ const today = date.toLocaleDateString("en-GB", {
 });
 
 const InvoiceForm = () => {
+ 
+
+  const [invoices, setInvoices] = useState([]);
+  console.log(invoices)
+
+  // Fetch invoices data
+  useEffect(() => {
+    // Your fetch logic to retrieve invoices data
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://express-invoice-1.onrender.com/api/v1/invoice');
+        const data = await response.json();
+        setInvoices(data.data);
+      } catch (error) {
+        console.error('Error fetching invoices data:', error);
+      }
+    };
+
+    fetchData();
+  }, [invoices]);
+
+  // Extract last orderId
+  const lastOrderId = invoices.length > 0 ? invoices[invoices.length - 1].orderId : '';
+
+
+
+
+
+
+  
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [note, setNote] = useState("");
   const [deliveryCharge, setDeliveryCharge] = useState("");
   const [paid, setPaid] = useState("");
   const [invoiceNumber, setInvoiceNumber] = useState(1);
-  const [cashierName, setCashierName] = useState("");
+  const [cashierInfo, setCashierInfo] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
@@ -33,16 +66,23 @@ const InvoiceForm = () => {
 
   const {
     data,
-    //  isloading,
-    // error
+     isloading,
+    error
   } = useGetAllInvoiceQuery();
-  console.log(data);
+
+
+  // const lastOrderId = data.data.length > 0 ? data.data[data.data.length - 1].orderId : '';
+  // const response = setInvoices(data.data)
+  
+  console.log(lastOrderId , "invoice");
+
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
 
   const reviewInvoiceHandler = (event) => {
+    
     event.preventDefault();
     setIsOpen(true);
   };
@@ -105,9 +145,17 @@ const InvoiceForm = () => {
   const paidAmount = parseInt(paid);
   const total = isNaN(deliCharge) ? subtotal : subtotal + deliCharge;
   const due = isNaN(paidAmount) ? total : total - paidAmount;
+  if (isloading) {
+    return <p>loading...</p>
+    
+  }
 
   return (
-    <form
+   <div>
+    {
+      data?.data?.map((invoice,i)=> console.log(invoice))
+    }
+     <form
       className="relative flex flex-col px-2 md:flex-row"
       onSubmit={reviewInvoiceHandler}
     >
@@ -122,14 +170,14 @@ const InvoiceForm = () => {
               Invoice Number:
             </label>
             <input
-              required
+              disabled
               className="max-w-[130px] bg-slate-100 p-1 rounded-md"
-              type="number"
+              type="text"
               name="invoiceNumber"
               id="invoiceNumber"
               min="1"
               step="1"
-              value={invoiceNumber}
+              value={lastOrderId}
               onChange={(event) => setInvoiceNumber(event.target.value)}
             />
           </div>
@@ -141,17 +189,58 @@ const InvoiceForm = () => {
               htmlFor="cashierName"
               className="text-sm font-bold sm:text-base"
             >
-              Cashier Name:
+              Cashier Info:
             </label>
-            <input
-              required
-              className=" bg-slate-100 p-2 rounded-md"
-              type="text"
+
+            <select
               name="cashierName"
+              required
               id="cashierName"
-              value={cashierName}
-              onChange={(event) => setCashierName(event.target.value)}
-            />
+              className='bg-slate-100 p-2 rounded-md'
+              value={cashierInfo.name}
+              onChange={(event) => {
+                const selectedOption = event.target.options[event.target.selectedIndex];
+                const selectedValue = event.target.value;
+                const selectedImage = selectedOption.getAttribute("data-image");
+                const selectedAddress = selectedOption.getAttribute("data-address");
+                setCashierInfo({
+                  name: selectedValue,
+                  image: selectedImage,
+                  address: selectedAddress
+                });
+              }}
+            >
+              <option disabled selected >Select a store</option>
+              <option
+                value="icchaporon.com"
+                data-image={icchaporon}
+                data-address="<p className='text-xs'>Shop no 9/B (2nd Floor)</p>
+                <p className='text-xs'>BTI Premier Plaza Shopping mall</p>
+                <p className='text-xs'>North Badda, Dhaka 1212</p>
+                "
+              >
+                icchaporon
+              </option>
+              <option
+                value="I fashion"
+                data-image={ifashion}
+                data-address="<p className='text-xs'>Shop no 9/B (2nd Floor)</p>
+                <p className='text-xs font-bold'>BTI Premier Plaza Shopping mall</p>
+                <p className='text-xs'>North Badda, Dhaka 1212</p>
+                "
+              >
+                I Fashion
+              </option>
+              <option
+                value="Mi Official Store"
+                data-image={mi}
+                data-address="<p className='text-xs'>4/119 Suvastu Nazer Valley Shopping Mahal</p>
+                <p className='text-xs'>Shahazadpur, Dhaka 1212</p>
+                "
+              >
+                Mi Official Store
+              </option>
+            </select>
           </div>
           <div>
             <label
@@ -278,7 +367,8 @@ const InvoiceForm = () => {
             setIsOpen={setIsOpen}
             invoiceInfo={{
               invoiceNumber,
-              cashierName,
+              lastOrderId,
+              cashierInfo,
               customerName,
               customerPhone,
               customerAddress,
@@ -356,7 +446,7 @@ const InvoiceForm = () => {
                     rows={5}
                     cols={36}
                     placeholder="Type something here..."
-                    // Add any additional props or styling as needed
+                  // Add any additional props or styling as needed
                   />
                 )}
               </div>
@@ -365,6 +455,7 @@ const InvoiceForm = () => {
         </div>
       </div>
     </form>
+   </div>
   );
 };
 
