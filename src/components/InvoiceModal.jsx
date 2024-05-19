@@ -138,7 +138,7 @@ const InvoiceModal = ({
             <h2 className="text-xl font-bold">COD</h2>
 
             {invoiceInfo.cashierInfo.address && (
-              <div dangerouslySetInnerHTML={{ __html: invoiceInfo.cashierInfo.address }}/>
+              <div className="text-xs" dangerouslySetInnerHTML={{ __html: invoiceInfo.cashierInfo.address }}/>
             )}
 
             <p className="text-xs">

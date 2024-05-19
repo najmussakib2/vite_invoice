@@ -214,9 +214,9 @@ const InvoiceForm = () => {
               <option
                 value="icchaporon.com"
                 data-image={icchaporon}
-                data-address="<p className='text-xs'>Shop no 9/B (2nd Floor)</p>
-                <p className='text-xs'>BTI Premier Plaza Shopping mall</p>
-                <p className='text-xs'>North Badda, Dhaka 1212</p>
+                data-address="<p >Shop no 9/B (2nd Floor)</p>
+                <p>BTI Premier Plaza Shopping mall</p>
+                <p>North Badda, Dhaka 1212</p>
                 "
               >
                 icchaporon
