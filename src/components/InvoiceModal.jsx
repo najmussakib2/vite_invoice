@@ -3,12 +3,10 @@ import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
-import printImg from "../img/172530_print_icon.png"
+import printImg from "../img/printer-1598-svgrepo-com.svg";
 import Barcode from "react-barcode";
 import { useCreateInvoiceMutation } from "../redux/api/invoice/invoiceApi";
-import { useReactToPrint } from 'react-to-print';
-
-
+import { useReactToPrint } from "react-to-print";
 
 const InvoiceModal = ({
   isOpen,
@@ -20,7 +18,7 @@ const InvoiceModal = ({
   function closeModal() {
     setIsOpen(false);
   }
-  const [createInvoice] = useCreateInvoiceMutation()
+  const [createInvoice] = useCreateInvoiceMutation();
 
   let serialNumberCounter = invoiceInfo.invoiceNumber;
 
@@ -28,7 +26,7 @@ const InvoiceModal = ({
     const paddedCounter = serialNumberCounter.toString().padStart(7, "0");
     return paddedCounter;
   }
- 
+
   const info = {
     cashier_name: invoiceInfo.cashierInfo.name,
     customer_name: invoiceInfo.customerName,
@@ -40,19 +38,18 @@ const InvoiceModal = ({
     subTotal: invoiceInfo.subtotal,
     total: invoiceInfo.total,
     due: invoiceInfo.due,
-    items: items
-  }
- 
+    items: items,
+  };
+
   const addNextInvoiceHandler = async () => {
     setIsOpen(false);
     onAddNextInvoice();
-    
-    const response = await createInvoice(info)
-    console.log(response)
+
+    const response = await createInvoice(info);
+    console.log(response);
   };
 
-
-  const SaveAsPDFHandler = async() => {
+  const SaveAsPDFHandler = async () => {
     const dom = document.getElementById("print");
     toPng(dom)
       .then((dataUrl) => {
@@ -124,15 +121,13 @@ const InvoiceModal = ({
     hour12: true,
   });
 
-
-    const contentToPrint = useRef(null);
-    const handlePrint = useReactToPrint({
-      documentTitle: "invoice",
-      onBeforePrint: () => console.log("before printing..."),
-      onAfterPrint: () => console.log("after printing..."),
-      removeAfterPrint: true,
-    });
-
+  const contentToPrint = useRef(null);
+  const handlePrint = useReactToPrint({
+    documentTitle: "invoice",
+    onBeforePrint: () => console.log("before printing..."),
+    onAfterPrint: () => console.log("after printing..."),
+    removeAfterPrint: true,
+  });
 
   const Invoice = ({ copy }) => {
     return (
@@ -141,14 +136,25 @@ const InvoiceModal = ({
           <div className="col-span-1">
             <div className="">
               <p>Bill From</p>
-              <img className="my-4 w-20" src={invoiceInfo.cashierInfo.image} alt="" />
+              <img
+                className="my-4 w-20"
+                src={invoiceInfo.cashierInfo.image}
+                alt=""
+              />
             </div>
 
-            <h2 className=" text-2xl font-bold">{invoiceInfo.cashierInfo.name}</h2>
+            <h2 className=" text-2xl font-bold">
+              {invoiceInfo.cashierInfo.name}
+            </h2>
             <h2 className="text-xl font-bold">COD</h2>
 
             {invoiceInfo.cashierInfo.address && (
-              <div className="text-xs" dangerouslySetInnerHTML={{ __html: invoiceInfo.cashierInfo.address }}/>
+              <div
+                className="text-xs"
+                dangerouslySetInnerHTML={{
+                  __html: invoiceInfo.cashierInfo.address,
+                }}
+              />
             )}
 
             <p className="text-xs">
@@ -249,8 +255,8 @@ const InvoiceModal = ({
                 {isNaN(invoiceInfo.due)
                   ? "0.00"
                   : invoiceInfo.due % 1 === 0
-                    ? invoiceInfo.due
-                    : invoiceInfo.due.toFixed(2)}{" "}
+                  ? invoiceInfo.due
+                  : invoiceInfo.due.toFixed(2)}{" "}
                 BDT
               </span>
             </div>
@@ -300,7 +306,7 @@ const InvoiceModal = ({
             leaveTo="opacity-0 scale-95"
           >
             <div className="my-8 inline-block w-full max-w-7xl transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all">
-              <div className="flex py-10 px-5" id="print"  ref={contentToPrint}>
+              <div className="flex py-10 px-5" id="print" ref={contentToPrint}>
                 <Invoice copy={"Customer"} />
                 <Invoice copy={"Office"} />
               </div>
@@ -311,7 +317,10 @@ const InvoiceModal = ({
                     handlePrint(null, () => contentToPrint.current);
                   }}
                 >
-                  <img src={printImg} className="w-3 text-red-500" alt="" srcset="" />
+                  
+                  
+                  <img src={printImg}  alt="" />
+                  
                   <span>Print</span>
                 </button>
 
