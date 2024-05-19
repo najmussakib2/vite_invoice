@@ -1,12 +1,14 @@
 /* eslint-disable react/prop-types */
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
-import img from "../../src/img/logo-ip.png";
+import printImg from "../img/172530_print_icon.png"
 import Barcode from "react-barcode";
 import { useCreateInvoiceMutation } from "../redux/api/invoice/invoiceApi";
-// import Barcode from "react-barcode";
+import { useReactToPrint } from 'react-to-print';
+
+
 
 const InvoiceModal = ({
   isOpen,
@@ -49,7 +51,6 @@ const InvoiceModal = ({
     console.log(response)
   };
 
-  console.log(info)
 
   const SaveAsPDFHandler = async() => {
     const dom = document.getElementById("print");
@@ -122,6 +123,15 @@ const InvoiceModal = ({
     second: "numeric",
     hour12: true,
   });
+
+
+    const contentToPrint = useRef(null);
+    const handlePrint = useReactToPrint({
+      documentTitle: "invoice",
+      onBeforePrint: () => console.log("before printing..."),
+      onAfterPrint: () => console.log("after printing..."),
+      removeAfterPrint: true,
+    });
 
 
   const Invoice = ({ copy }) => {
@@ -290,11 +300,21 @@ const InvoiceModal = ({
             leaveTo="opacity-0 scale-95"
           >
             <div className="my-8 inline-block w-full max-w-7xl transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all">
-              <div className="flex py-10 px-5" id="print">
+              <div className="flex py-10 px-5" id="print"  ref={contentToPrint}>
                 <Invoice copy={"Customer"} />
                 <Invoice copy={"Office"} />
               </div>
               <div className="mt-4 flex space-x-2 px-4 pb-6">
+                <button
+                  className="flex w-full items-center justify-center space-x-1 rounded-md border border-blue-500 py-2 text-sm text-blue-500 shadow-sm hover:bg-blue-500 hover:text-white"
+                  onClick={() => {
+                    handlePrint(null, () => contentToPrint.current);
+                  }}
+                >
+                  <img src={printImg} className="w-3 text-red-500" alt="" srcset="" />
+                  <span>Print</span>
+                </button>
+
                 <button
                   className="flex w-full items-center justify-center space-x-1 rounded-md border border-blue-500 py-2 text-sm text-blue-500 shadow-sm hover:bg-blue-500 hover:text-white"
                   onClick={SaveAsPDFHandler}

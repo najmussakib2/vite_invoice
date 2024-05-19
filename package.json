@@ -19,6 +19,7 @@
     "react-barcode": "^1.5.1",
     "react-dom": "^18.2.0",
     "react-redux": "^9.1.2",
+    "react-to-print": "^2.15.1",
     "uid": "^2.0.2"
   },
   "devDependencies": {

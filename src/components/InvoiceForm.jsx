@@ -18,7 +18,7 @@ const InvoiceForm = () => {
  
 
   const [invoices, setInvoices] = useState([]);
-  console.log(invoices)
+
 
   // Fetch invoices data
   useEffect(() => {
@@ -74,7 +74,7 @@ const InvoiceForm = () => {
   // const lastOrderId = data.data.length > 0 ? data.data[data.data.length - 1].orderId : '';
   // const response = setInvoices(data.data)
   
-  console.log(lastOrderId , "invoice");
+
 
 
   const toggleVisibility = () => {
@@ -152,9 +152,6 @@ const InvoiceForm = () => {
 
   return (
    <div>
-    {
-      data?.data?.map((invoice,i)=> console.log(invoice))
-    }
      <form
       className="relative flex flex-col px-2 md:flex-row"
       onSubmit={reviewInvoiceHandler}
