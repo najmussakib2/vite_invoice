@@ -204,8 +204,8 @@ const InvoiceModal = ({
               {items.map((item) => (
                 <tr key={item.id}>
                   <td className="w-[60%]">{item.name}</td>
-                  <td className="min-w-[50px] text-center">Tk. {item.price}</td>
-                  <td className="min-w-[80px] text-center">
+                  <td className="min-w-[100px] text-center">Tk. {item.price}</td>
+                  <td className="min-w-[40px] text-center">
                     {Number(item.qty).toFixed(0)}
                   </td>
                   <td className="min-w-[90px] text-right">
