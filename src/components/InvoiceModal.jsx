@@ -166,14 +166,14 @@ const InvoiceModal = ({
           </div>
           <div className="col-span-1 text-right">
             <h1 className="text-3xl font-bold">INVOICE</h1>
-            <p>{invoiceInfo.lastOrderId}COD</p>
+            <p>IPN{invoiceInfo.lastOrderId}COD</p>
 
             <p className="text-xs">Date: {today}</p>
             <div className="flex justify-end">
               <Barcode
                 width={2}
                 height={50}
-                value={`${invoiceInfo.lastOrderId}COD`}
+                value={`IPN${invoiceInfo.lastOrderId}COD`}
                 displayValue={false}
               />
             </div>

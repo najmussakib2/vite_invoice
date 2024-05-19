@@ -35,16 +35,10 @@ const InvoiceForm = () => {
 
     fetchData();
   }, [invoices]);
-
+  console.log(invoices)
   // Extract last orderId
-  const lastOrderId = invoices.length > 0 ? invoices[invoices.length - 1].orderId : '';
+  const lastOrderId = invoices.length > 0 ? parseInt(invoices[invoices.length - 1].orderId) + 1 : 1;
 
-
-
-
-
-
-  
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [note, setNote] = useState("");
