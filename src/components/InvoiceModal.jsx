@@ -173,7 +173,7 @@ const InvoiceModal = ({
               <Barcode
                 width={2}
                 height={50}
-                value={`#IP${generateSerialNumber()}COD`}
+                value={`${invoiceInfo.lastOrderId}COD`}
                 displayValue={false}
               />
             </div>
