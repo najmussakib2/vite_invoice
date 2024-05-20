@@ -391,9 +391,8 @@ const InvoiceForm = () => {
             <div className="py-5 text-right">
               <div className="space-y-4">
                 <a
-                  
                   onClick={toggleVisibility}
-                  className="rounded-sm bg-blue-300 px-3 py-1 text-xs text-white hover:bg-blue-500 focus:outline-none focus:ring"
+                  className="rounded-sm cursor-pointer bg-blue-300 px-3 py-1 text-xs text-white hover:bg-blue-500 focus:outline-none focus:ring"
                 >
                   add a note
                 </a>
