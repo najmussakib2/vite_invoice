@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { uid } from "uid";
 import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
-import incrementString from "../helpers/incrementString";
 import { useGetAllInvoiceQuery } from "../redux/api/invoice/invoiceApi";
 import icchaporon from "../../src/img/logo-ip.png";
 import ifashion from "../../src/img/I Fashion Logo.png";
@@ -16,28 +15,18 @@ const today = date.toLocaleDateString("en-GB", {
 
 const InvoiceForm = () => {
  
-
+  const { data: allData } = useGetAllInvoiceQuery();
   const [invoices, setInvoices] = useState([]);
 
-
-  // Fetch invoices data
   useEffect(() => {
-    // Your fetch logic to retrieve invoices data
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://express-invoice-1.onrender.com/api/v1/invoice');
-        const data = await response.json();
-        setInvoices(data.data);
-      } catch (error) {
-        console.error('Error fetching invoices data:', error);
+      if (allData) {
+          setInvoices(allData.data); 
       }
-    };
+  }, [allData]);
 
-    fetchData();
-  }, [invoices]);
-  console.log(invoices)
   // Extract last orderId
   const lastOrderId = invoices.length > 0 ? parseInt(invoices[invoices.length - 1].orderId) + 1 : 1;
+
 
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -58,17 +47,7 @@ const InvoiceForm = () => {
     },
   ]);
 
-  const {
-    data,
-     isloading,
-    error
-  } = useGetAllInvoiceQuery();
-
-
-  // const lastOrderId = data.data.length > 0 ? data.data[data.data.length - 1].orderId : '';
-  // const response = setInvoices(data.data)
-  
-
+  const {isloading} = useGetAllInvoiceQuery();
 
 
   const toggleVisibility = () => {
@@ -81,17 +60,6 @@ const InvoiceForm = () => {
     setIsOpen(true);
   };
 
-  const addNextInvoiceHandler = () => {
-    setInvoiceNumber((prevNumber) => incrementString(prevNumber));
-    setItems([
-      {
-        id: uid(6),
-        name: "",
-        qty: 1,
-        price: "1.00",
-      },
-    ]);
-  };
 
   const addItemHandler = () => {
     const id = uid(6);
@@ -169,7 +137,7 @@ const InvoiceForm = () => {
               min="1"
               step="1"
               value={lastOrderId}
-              onChange={(event) => setInvoiceNumber(event.target.value)}
+              
             />
           </div>
         </div>
@@ -201,7 +169,7 @@ const InvoiceForm = () => {
                 });
               }}
             >
-              <option disabled selected >Select a store</option>
+              <option disabled >Select a store</option>
               <option
                 value="icchaporon.com"
                 data-image={icchaporon}
@@ -371,7 +339,7 @@ const InvoiceForm = () => {
               note,
             }}
             items={items}
-            onAddNextInvoice={addNextInvoiceHandler}
+            
           />
           <div className="space-y-4 py-2">
             <div className="space-y-2">
@@ -423,7 +391,7 @@ const InvoiceForm = () => {
             <div className="py-5 text-right">
               <div className="space-y-4">
                 <a
-                  href="/#"
+                  
                   onClick={toggleVisibility}
                   className="rounded-sm bg-blue-300 px-3 py-1 text-xs text-white hover:bg-blue-500 focus:outline-none focus:ring"
                 >

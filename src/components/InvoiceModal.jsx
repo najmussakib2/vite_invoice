@@ -5,7 +5,7 @@ import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import printImg from "../img/printer-1598-svgrepo-com.svg";
 import Barcode from "react-barcode";
-import { useCreateInvoiceMutation } from "../redux/api/invoice/invoiceApi";
+import { useCreateInvoiceMutation, useGetAllInvoiceQuery } from "../redux/api/invoice/invoiceApi";
 import { useReactToPrint } from "react-to-print";
 
 const InvoiceModal = ({
@@ -40,13 +40,19 @@ const InvoiceModal = ({
     due: invoiceInfo.due,
     items: items,
   };
-
+  const { refetch } = useGetAllInvoiceQuery();
   const addNextInvoiceHandler = async () => {
-    setIsOpen(false);
-    onAddNextInvoice();
-
-    const response = await createInvoice(info);
-    console.log(response);
+    try{
+      const response = await createInvoice(info);
+      if(response.data.success === true){
+        refetch();
+        setIsOpen(false);
+        onAddNextInvoice();
+      }
+    
+    }catch(err){
+      console.log(err)
+    }
   };
 
   const SaveAsPDFHandler = async () => {

@@ -54,7 +54,7 @@ const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
           cellData={{
             className: "text-right p-2 bg-slate-100 my-2 rounded-md",
             type: "number",
-            min: "0.01",
+            min: "0.01 ",
             step: "0.01",
             name: "price",
             id: id,
