@@ -1,5 +1,5 @@
-import React from 'react';
-import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+
+import { FormOutlined, DatabaseOutlined } from '@ant-design/icons';
 import { Layout, Menu, theme } from 'antd';
 import { Link, Outlet } from 'react-router-dom';
 const { Header, Content, Footer, Sider } = Layout;
@@ -28,12 +28,12 @@ const App = () => {
           items={[
             {
               key: '1',
-              icon: <UserOutlined />,
+              icon: <FormOutlined />,
               label: (<Link to={'/'}>create invoice</Link>),
             },
             {
               key: '2',
-              icon: <VideoCameraOutlined />,
+              icon: <DatabaseOutlined />,
               label: (<Link to={'/invoices'}>invoices</Link>),
             },
             

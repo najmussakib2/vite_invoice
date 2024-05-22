@@ -4,9 +4,10 @@ import { Dialog, Transition } from "@headlessui/react";
 import { toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import printImg from "../img/printer-1598-svgrepo-com.svg";
-import Barcode from "react-barcode";
+
 import { useCreateInvoiceMutation, useGetAllInvoiceQuery } from "../redux/api/invoice/invoiceApi";
 import { useReactToPrint } from "react-to-print";
+import Invoice from "./Invoice";
 
 const InvoiceModal = ({
   isOpen,
@@ -18,28 +19,23 @@ const InvoiceModal = ({
   function closeModal() {
     setIsOpen(false);
   }
-  const [createInvoice] = useCreateInvoiceMutation();
+  const [createInvoice] = useCreateInvoiceMutation();  
 
-  let serialNumberCounter = invoiceInfo.invoiceNumber;
-
-  function generateSerialNumber() {
-    const paddedCounter = serialNumberCounter.toString().padStart(7, "0");
-    return paddedCounter;
-  }
 
   const info = {
-    cashier_name: invoiceInfo.cashierInfo.name,
-    customer_name: invoiceInfo.customerName,
-    customer_phone: invoiceInfo.customerPhone,
-    customer_address: invoiceInfo.customerAddress,
-    delivery_charge: invoiceInfo.deliCharge,
-    paid_amount: invoiceInfo.paidAmount,
+    cashier_name: invoiceInfo.cashierInfo?.name || invoiceInfo.cashier_name,
+    customer_name: invoiceInfo.customer_name,
+    customer_phone: invoiceInfo.customer_phone,
+    customer_address: invoiceInfo.customer_address,
+    delivery_charge: invoiceInfo.delivery_charge,
+    paid_amount: invoiceInfo.paid_amount,
     note: invoiceInfo.note,
     subTotal: invoiceInfo.subtotal,
     total: invoiceInfo.total,
     due: invoiceInfo.due,
     items: items,
   };
+  // console.log(info)
   const { refetch } = useGetAllInvoiceQuery();
   const addNextInvoiceHandler = async () => {
     try{
@@ -135,145 +131,7 @@ const InvoiceModal = ({
     removeAfterPrint: true,
   });
 
-  const Invoice = ({ copy }) => {
-    return (
-      <div>
-        <div className="mx-5 grid grid-cols-3">
-          <div className="col-span-1">
-            <div className="">
-              <p>Bill From</p>
-              <img
-                className="my-4 w-20"
-                src={invoiceInfo.cashierInfo.image}
-                alt=""
-              />
-            </div>
-
-            <h2 className=" text-2xl font-bold">
-              {invoiceInfo.cashierInfo.name}
-            </h2>
-            <h2 className="text-xl font-bold">COD</h2>
-
-            {invoiceInfo.cashierInfo.address && (
-              <div
-                className="text-xs"
-                dangerouslySetInnerHTML={{
-                  __html: invoiceInfo.cashierInfo.address,
-                }}
-              />
-            )}
-
-            <p className="text-xs">
-              <span className="font-bold">Phone No. </span> +8809611-595290
-            </p>
-          </div>
-          <div>
-            <p className="col-span-1 text-center text-xs">{copy} Copy</p>
-          </div>
-          <div className="col-span-1 text-right">
-            <h1 className="text-3xl font-bold">INVOICE</h1>
-            <p>IPN{invoiceInfo.lastOrderId}COD</p>
-
-            <p className="text-xs">Date: {today}</p>
-            <div className="flex justify-end">
-              <Barcode
-                width={2}
-                height={50}
-                value={`IPN${invoiceInfo.lastOrderId}COD`}
-                displayValue={false}
-              />
-            </div>
-
-            <p className="text-xs font-bold">
-              Bill To:{" "}
-              <span className="font-normal">{invoiceInfo.customerName}</span>
-            </p>
-            <p className="text-xs font-bold">
-              Mobile no.{" "}
-              <span className="font-normal">{invoiceInfo.customerPhone}</span>
-            </p>
-            <p className="text-xs font-bold">Address:</p>
-            <p className="text-xs">{invoiceInfo.customerAddress}</p>
-          </div>
-        </div>
-        <div className="mx-5 mt-10">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-y border-black/10 text-sm md:text-base">
-                <th className="text-center">Item & Description</th>
-                <th className="text-center">Rate</th>
-                <th className="text-right">Quantity</th>
-                <th className="text-right">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td className="w-[60%]">{item.name}</td>
-                  <td className="min-w-[100px] text-center">Tk. {item.price}</td>
-                  <td className="min-w-[40px] text-center">
-                    {Number(item.qty).toFixed(0)}
-                  </td>
-                  <td className="min-w-[90px] text-right">
-                    Tk. {Number(item.price * item.qty).toFixed(0)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="mt-6">
-          <div className="mt-10 mr-5 ml-auto flex max-w-xs flex-col items-end space-y-2">
-            <div className="flex w-full justify-between pt-10">
-              <span className="font-bold">Subtotal:</span>
-              <span>Tk. {invoiceInfo.subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex w-full justify-between">
-              <span className="font-bold">Delivery Charge:</span>
-              <span>
-                Tk.{" "}
-                {isNaN(invoiceInfo.deliCharge)
-                  ? "0.00"
-                  : invoiceInfo.deliCharge.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex w-full justify-between">
-              <span className="font-bold">Total:</span>
-              <span>
-                {isNaN(invoiceInfo.total)
-                  ? "0.00"
-                  : invoiceInfo.total.toFixed(2)}{" "}
-                BDT
-              </span>
-            </div>
-            <div className="flex w-full justify-between">
-              <span className="font-bold">Paid Amount:</span>
-              <span>
-                {isNaN(invoiceInfo.paidAmount)
-                  ? "0.00"
-                  : invoiceInfo.paidAmount.toFixed(2)}{" "}
-                BDT
-              </span>
-            </div>
-            <div className="flex w-full justify-between border-t border-black/10 py-2">
-              <span className="font-bold">Due:</span>
-              <span className="font-bold">
-                {isNaN(invoiceInfo.due)
-                  ? "0.00"
-                  : invoiceInfo.due % 1 === 0
-                  ? invoiceInfo.due
-                  : invoiceInfo.due.toFixed(2)}{" "}
-                BDT
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="mt-16 text-center text-xs font-semibold text-violet-900">
-          <h1>**{invoiceInfo.note}**</h1>
-        </div>
-      </div>
-    );
-  };
+  console.log("134 invoice modal: ",invoiceInfo?.orderId || null)
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -313,8 +171,8 @@ const InvoiceModal = ({
           >
             <div className="my-8 inline-block w-full max-w-7xl transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all">
               <div className="flex py-10 px-5" id="print" ref={contentToPrint}>
-                <Invoice copy={"Customer"} />
-                <Invoice copy={"Office"} />
+                <Invoice invoiceInfo={invoiceInfo} copy={"Customer"} date={today} items={items} />
+                <Invoice invoiceInfo={invoiceInfo} copy={"Office"} date={today} items={items} />
               </div>
               <div className="mt-4 flex space-x-2 px-4 pb-6">
                 <button
@@ -325,7 +183,7 @@ const InvoiceModal = ({
                 >
                   
                   
-                  <img src={printImg}  alt="" />
+                  <img src={printImg} alt="" />
                   
                   <span>Print</span>
                 </button>
@@ -350,7 +208,8 @@ const InvoiceModal = ({
                   </svg>
                   <span>Download</span>
                 </button>
-                <button
+                {!invoiceInfo?._id?
+                  <button
                   onClick={addNextInvoiceHandler}
                   className="flex w-full items-center justify-center space-x-1 rounded-md bg-blue-500 py-2 text-sm text-white shadow-sm hover:bg-blue-600"
                 >
@@ -369,7 +228,8 @@ const InvoiceModal = ({
                     />
                   </svg>
                   <span>Next</span>
-                </button>
+                </button>:<></>
+                }
               </div>
             </div>
           </Transition.Child>

@@ -78,16 +78,16 @@ const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
           />
         </svg>
         <InvoiceField
-          onEditItem={(event) => onEdtiItem(event)}
+          onEditItem={(event) => {onEdtiItem(event); console.log("item 81 amount: ",event.target)}}
           cellData={{
             className: "text-right p-2 bg-slate-100 rounded-md my-2",
             disabled: true,
             type: "number",
             min: "0.01",
             step: "0.01",
-            name: "price",
+            name: "amount",
             id: id,
-            value: price * qty,
+            value: (price*qty),
           }}
         />
       </td>
