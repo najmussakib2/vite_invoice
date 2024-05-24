@@ -111,9 +111,9 @@ const Invoice = ({ invoiceInfo, copy, date, items }) => {
             <span className="font-bold">Delivery Charge:</span>
             <span>
               Tk.{" "}
-              {isNaN(invoiceInfo.deliCharge)
+              {isNaN(invoiceInfo.delivery_charge)
                 ? "0.00"
-                : invoiceInfo.deliCharge}
+                : invoiceInfo.delivery_charge}
             </span>
           </div>
           <div className="flex w-full justify-between">
@@ -126,9 +126,9 @@ const Invoice = ({ invoiceInfo, copy, date, items }) => {
           <div className="flex w-full justify-between">
             <span className="font-bold">Paid Amount:</span>
             <span>
-              {isNaN(invoiceInfo.paidAmount)
+              {isNaN(invoiceInfo.paid_amount)
                 ? "0.00"
-                : invoiceInfo.paidAmount}{" "}
+                : invoiceInfo.paid_amount}{" "}
               BDT
             </span>
           </div>
