@@ -145,8 +145,8 @@ const Invoice = ({ invoiceInfo, copy, date, items }) => {
           </div>
         </div>
       </div>
-      <div className="mt-16 text-center text-xs font-semibold text-violet-900">
-        <h1>**{invoiceInfo.note}**</h1>
+      <div className="mt-16 text-center mx-auto text-xs font-semibold w-[50%] text-violet-900">
+        <h6 className="break-all">**{invoiceInfo.note}**</h6>
       </div>
     </div>
   );
