@@ -21,7 +21,7 @@ const InvoiceModal = ({
   }
   const [createInvoice] = useCreateInvoiceMutation();  
 
-console.log(invoiceInfo.subTotal)
+console.log("form 24",invoiceInfo.cashierInfo?.name)
   const info = {
     cashier_name: invoiceInfo.cashierInfo?.name || invoiceInfo.cashier_name,
     customer_name: invoiceInfo.customer_name,

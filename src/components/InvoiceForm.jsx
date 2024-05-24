@@ -76,6 +76,20 @@ const InvoiceForm = () => {
     ]);
   };
 
+  const addNextInvoiceHandler = () => {
+    setCustomer_name("");
+    setCustomer_phone("");
+    setCustomer_address("");
+    setItems([
+      {
+        id: uid(6),
+        name: "",
+        qty: 1,
+        price: "",
+      },
+    ]);
+  };
+
   const deleteItemHandler = (id) => {
     setItems((prevItem) => prevItem.filter((item) => item.id !== id));
   };
@@ -352,6 +366,7 @@ const InvoiceForm = () => {
                 note,
               }}
               items={items}
+              onAddNextInvoice={addNextInvoiceHandler}
 
             />
             <div className="space-y-4 py-2">
