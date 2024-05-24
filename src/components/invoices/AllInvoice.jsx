@@ -61,7 +61,7 @@ const AllInvoices = () => {
       width: 100,
       render: (_, record) => (
         <>
-          <a onClick={() => {setInfo(record); setOpen(true)}}>invoice</a>
+          <button className="bg-neutral-500 text-white px-1 rounded-sm" onClick={() => {setInfo(record); setOpen(true)}}>invoice</button>
         </>
       ),
     },
