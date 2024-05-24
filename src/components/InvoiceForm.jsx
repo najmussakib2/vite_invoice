@@ -34,7 +34,11 @@ const InvoiceForm = () => {
   const [note, setNote] = useState("");
   const [deliveryCharge, setDeliveryCharge] = useState("");
   const [paid, setPaid] = useState("");
-  const [cashierInfo, setCashierInfo] = useState("");
+  const [cashierInfo, setCashierInfo] = useState({
+    name:"icchaporon.com",
+    image:"/src/img/logo-ip.png",
+    address:"<p >Shop no 9/B (2nd Floor)</p><p>BTI Premier Plaza Shopping mall</p><p>North Badda, Dhaka 1212</p>"  
+  });
   const [customer_name, setCustomer_name] = useState("");
   const [customer_phone, setCustomer_phone] = useState("");
   const [customer_address, setCustomer_address] = useState("");
@@ -48,6 +52,7 @@ const InvoiceForm = () => {
     },
   ]);
 
+  console.log("51 form",cashierInfo)
   const { isloading } = useGetAllInvoiceQuery();
 
 
@@ -100,19 +105,19 @@ const InvoiceForm = () => {
       name: event.target.name,
       value: event.target.value,
     };
-    console.log("89 form", editedItem)
+    
     const newItems = items.map((items) => {
       for (const key in items) {
         if (key === editedItem.name && items.id === editedItem.id) {
           items[key] = editedItem.value;
-          console.log(key)
+          
         }
       }
       return items;
     });
 
     setItems(newItems);
-    console.log("108 form", newItems)
+  
 
   };
 
@@ -122,7 +127,6 @@ const InvoiceForm = () => {
     const amount = qty * price;
     obj.amount = amount.toString();
 });
-  console.log("24 modal:",items)
 
   const subTotal = items.reduce((prev, curr) => {
     if (curr.name.trim().length > 0)
@@ -135,7 +139,7 @@ const InvoiceForm = () => {
   const total = isNaN(delivery_charge) ? subTotal : subTotal + delivery_charge;
   const due = isNaN(paid_amount) ? total : total - paid_amount;
 
-  console.log(items)
+
 
   if (isloading) {
     return <p>loading...</p>
