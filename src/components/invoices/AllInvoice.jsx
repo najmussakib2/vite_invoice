@@ -1,20 +1,38 @@
 import { Table } from "antd";
 import { useGetAllInvoiceQuery } from "../../redux/api/invoice/invoiceApi";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import InvoiceModal from "../InvoiceModal";
+import SearchComp from "../usableCompo/SearchComp";
+import IPPagination from "../usableCompo/IPPagination";
 
 const AllInvoices = () => {
-  const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const [info, setInfo] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
 
-  const { data: allData, isLoading } = useGetAllInvoiceQuery();
+  const searchQuery = [
+    {
+      name: "limit",
+      value: 10 + "",
+    },
+    {
+      name: "page",
+      value: page + "",
+    },
+  ];
+  if (searchTerm) {
+    searchQuery.push({
+      name: "searchTerm",
+      value: searchTerm,
+    });
+  }
 
-  useEffect(() => {
-    if (allData) {
-      setData(allData.data);
-    }
-  }, [allData]);
+  const {
+    data: allData,
+    isLoading,
+    isFetching: isInvoicesFetching,
+  } = useGetAllInvoiceQuery(searchQuery);
 
   const columns = [
     {
@@ -61,7 +79,15 @@ const AllInvoices = () => {
       width: 100,
       render: (_, record) => (
         <>
-          <button className="bg-neutral-500 text-white px-1 rounded-sm" onClick={() => {setInfo(record); setOpen(true)}}>invoice</button>
+          <button
+            className="bg-neutral-500 text-white px-1 rounded-sm"
+            onClick={() => {
+              setInfo(record);
+              setOpen(true);
+            }}
+          >
+            invoice
+          </button>
         </>
       ),
     },
@@ -73,18 +99,38 @@ const AllInvoices = () => {
 
   return (
     <div>
+      <div className="my-5">
+        <SearchComp style={{ width: 200 }} setSearchTerm={setSearchTerm} />
+      </div>
       <Table
         columns={columns}
-        dataSource={data}
-        scroll={{
-          x: 1000,
-          y: 700,
+        loading={isInvoicesFetching}
+        rowKey="_id"
+        dataSource={allData?.data}
+        pagination={false}
+        scroll={{ x: 400 }}
+      />
+      <IPPagination
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          padding: "1rem",
         }}
-        pagination={true}
+        page={page}
+        setPage={setPage}
+        total={allData?.meta.total}
+        pageSize={allData?.meta.limit}
       />
 
-      {open && <InvoiceModal isOpen={open}
-            setIsOpen={setOpen} invoiceInfo={info} items={info.items}/>}
+      {open && (
+        <InvoiceModal
+          isOpen={open}
+          setIsOpen={setOpen}
+          invoiceInfo={info}
+          items={info.items}
+        />
+      )}
     </div>
   );
 };
