@@ -44,6 +44,7 @@ const InvoiceForm = () => {
   const [customer_name, setCustomer_name] = useState("");
   const [customer_phone, setCustomer_phone] = useState("");
   const [customer_address, setCustomer_address] = useState("");
+
   const [items, setItems] = useState([
     {
       id: uid(6),
@@ -168,6 +169,7 @@ const InvoiceForm = () => {
             </div>
           </div>
           <h1 className="text-center text-lg font-bold">INVOICE</h1>
+
           <div className="grid grid-cols-2 gap-5 pt-4 pb-8">
             <div>
               <label

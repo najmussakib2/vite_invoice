@@ -1,7 +1,6 @@
-
-import { FormOutlined, DatabaseOutlined } from '@ant-design/icons';
-import { Layout, Menu, theme } from 'antd';
-import { Link, Outlet } from 'react-router-dom';
+import { FormOutlined, DatabaseOutlined } from "@ant-design/icons";
+import { Layout, Menu, theme } from "antd";
+import { Link, Outlet } from "react-router-dom";
 const { Header, Content, Footer, Sider } = Layout;
 
 const App = () => {
@@ -24,19 +23,23 @@ const App = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={['1']}
+          defaultSelectedKeys={["1"]}
           items={[
             {
-              key: '1',
+              key: "1",
               icon: <FormOutlined />,
-              label: (<Link to={'/'}>create invoice</Link>),
+              label: <Link to={"/"}>create invoice</Link>,
             },
             {
-              key: '2',
+              key: "2",
               icon: <DatabaseOutlined />,
-              label: (<Link to={'/invoices'}>invoices</Link>),
+              label: <Link to={"/invoices"}>invoices</Link>,
             },
-            
+            {
+              key: "3",
+              icon: <DatabaseOutlined />,
+              label: <Link to={"/invoice-upload"}>invoice upload</Link>,
+            },
           ]}
         />
       </Sider>
@@ -49,20 +52,18 @@ const App = () => {
         />
         <Content
           style={{
-            margin: '24px 16px 0',
+            margin: "24px 16px 0",
           }}
         >
-          
-            <div className="min-h-screen bg-gray-100">
-              <div className="mx-auto max-w-7xl">
-                <Outlet />
-              </div>
+          <div className="min-h-screen bg-gray-100">
+            <div className="mx-auto max-w-7xl">
+              <Outlet />
             </div>
-          
+          </div>
         </Content>
         <Footer
           style={{
-            textAlign: 'center',
+            textAlign: "center",
           }}
         >
           {/* footer content */}

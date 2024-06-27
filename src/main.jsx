@@ -10,6 +10,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import AllInvoices from './components/invoices/AllInvoice.jsx';
+import InvoiceFileUpload from './components/InvoiceFileUpload.jsx';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
       {
         path: '/invoices',
         element: <AllInvoices />
+      },
+      {
+        path: '/invoice-upload',
+        element: <InvoiceFileUpload />
       },
     ]
   },
