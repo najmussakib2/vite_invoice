@@ -14,10 +14,9 @@ const today = date.toLocaleDateString("en-GB", {
 });
 
 const InvoiceForm = () => {
-
-  const { data: allData } = useGetAllInvoiceQuery();
+  const { data: allData, isLoading: allInvoiceLoading } =
+    useGetAllInvoiceQuery();
   const [invoices, setInvoices] = useState([]);
-
 
   useEffect(() => {
     if (allData) {
@@ -26,8 +25,10 @@ const InvoiceForm = () => {
   }, [allData]);
 
   // Extract last orderId
-  const orderId = invoices.length > 0 ? parseInt(invoices[invoices.length - 1].orderId) + 1 : 1;
-
+  const orderId =
+    invoices.length > 0
+      ? parseInt(invoices[invoices.length - 1].orderId) + 1
+      : 1;
 
   const [isOpen, setIsOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -35,9 +36,10 @@ const InvoiceForm = () => {
   const [deliveryCharge, setDeliveryCharge] = useState("");
   const [paid, setPaid] = useState("");
   const [cashierInfo, setCashierInfo] = useState({
-    name:"icchaporon.com",
-    image:"/src/img/logo-ip.png",
-    address:"<p >Shop no 9/B (2nd Floor)</p><p>BTI Premier Plaza Shopping mall</p><p>North Badda, Dhaka 1212</p>"  
+    name: "icchaporon.com",
+    image: "/src/img/logo-ip.png",
+    address:
+      "<p >Shop no 9/B (2nd Floor)</p><p>BTI Premier Plaza Shopping mall</p><p>North Badda, Dhaka 1212</p>",
   });
   const [customer_name, setCustomer_name] = useState("");
   const [customer_phone, setCustomer_phone] = useState("");
@@ -48,24 +50,21 @@ const InvoiceForm = () => {
       name: "",
       qty: 1,
       price: "",
-      amount: ""
+      amount: "",
     },
   ]);
 
-  console.log("51 form",cashierInfo)
+  console.log("51 form", cashierInfo);
   const { isloading } = useGetAllInvoiceQuery();
-
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
 
   const reviewInvoiceHandler = (event) => {
-
     event.preventDefault();
     setIsOpen(true);
   };
-
 
   const addItemHandler = () => {
     const id = uid(6);
@@ -76,7 +75,7 @@ const InvoiceForm = () => {
         name: "",
         qty: 1,
         price: "",
-        amount: ""
+        amount: "",
       },
     ]);
   };
@@ -105,28 +104,25 @@ const InvoiceForm = () => {
       name: event.target.name,
       value: event.target.value,
     };
-    
+
     const newItems = items.map((items) => {
       for (const key in items) {
         if (key === editedItem.name && items.id === editedItem.id) {
           items[key] = editedItem.value;
-          
         }
       }
       return items;
     });
 
     setItems(newItems);
-  
-
   };
 
-  items.forEach(obj => {
+  items.forEach((obj) => {
     const qty = parseFloat(obj.qty);
     const price = parseFloat(obj.price);
     const amount = qty * price;
     obj.amount = amount.toString();
-});
+  });
 
   const subTotal = items.reduce((prev, curr) => {
     if (curr.name.trim().length > 0)
@@ -139,11 +135,8 @@ const InvoiceForm = () => {
   const total = isNaN(delivery_charge) ? subTotal : subTotal + delivery_charge;
   const due = isNaN(paid_amount) ? total : total - paid_amount;
 
-
-
-  if (isloading) {
-    return <p>loading...</p>
-
+  if (isloading || allInvoiceLoading) {
+    return <p>loading...</p>;
   }
 
   return (
@@ -171,7 +164,6 @@ const InvoiceForm = () => {
                 min="1"
                 step="1"
                 value={orderId}
-
               />
             </div>
           </div>
@@ -189,21 +181,24 @@ const InvoiceForm = () => {
                 name="cashierName"
                 required
                 id="cashierName"
-                className='bg-slate-100 p-2 rounded-md'
+                className="bg-slate-100 p-2 rounded-md"
                 value={cashierInfo.name}
                 onChange={(event) => {
-                  const selectedOption = event.target.options[event.target.selectedIndex];
+                  const selectedOption =
+                    event.target.options[event.target.selectedIndex];
                   const selectedValue = event.target.value;
-                  const selectedImage = selectedOption.getAttribute("data-image");
-                  const selectedAddress = selectedOption.getAttribute("data-address");
+                  const selectedImage =
+                    selectedOption.getAttribute("data-image");
+                  const selectedAddress =
+                    selectedOption.getAttribute("data-address");
                   setCashierInfo({
                     name: selectedValue,
                     image: selectedImage,
-                    address: selectedAddress
+                    address: selectedAddress,
                   });
                 }}
               >
-                <option disabled >Select a store</option>
+                <option disabled>Select a store</option>
                 <option
                   value="icchaporon.com"
                   data-image={icchaporon}
@@ -326,7 +321,10 @@ const InvoiceForm = () => {
             <div className="flex w-full justify-between md:w-1/2">
               <span className="font-bold">Delivery Charge:</span>
               <span>
-                Tk. {isNaN(delivery_charge) ? "0.00" : delivery_charge.toFixed(2) || "0.00"}
+                Tk.{" "}
+                {isNaN(delivery_charge)
+                  ? "0.00"
+                  : delivery_charge.toFixed(2) || "0.00"}
               </span>
             </div>
             <div className="flex w-full justify-between md:w-1/2">
@@ -336,7 +334,8 @@ const InvoiceForm = () => {
             <div className="flex w-full justify-between md:w-1/2">
               <span className="font-bold">Paid Amount:</span>
               <span>
-                Tk. {isNaN(paid_amount) ? "0.00" : paid_amount.toFixed(2) || "0.00"}
+                Tk.{" "}
+                {isNaN(paid_amount) ? "0.00" : paid_amount.toFixed(2) || "0.00"}
               </span>
             </div>
             <div className="flex w-full justify-between border-t border-gray-900/10 pt-2 md:w-1/2">
@@ -349,8 +348,10 @@ const InvoiceForm = () => {
         </div>
         <div className="basis-1/4 bg-transparent">
           <div className="sticky top-0 z-10 space-y-4 divide-y divide-gray-900/10 pb-8 md:pt-6 md:pl-4">
-            <button className="w-full rounded-md bg-blue-500 py-2 text-sm text-white shadow-sm hover:bg-blue-600"
-              type="submit">
+            <button
+              className="w-full rounded-md bg-blue-500 py-2 text-sm text-white shadow-sm hover:bg-blue-600"
+              type="submit"
+            >
               Review Invoice
             </button>
             <InvoiceModal
@@ -371,7 +372,6 @@ const InvoiceForm = () => {
               }}
               items={items}
               onAddNextInvoice={addNextInvoiceHandler}
-
             />
             <div className="space-y-4 py-2">
               <div className="space-y-2">
@@ -436,7 +436,7 @@ const InvoiceForm = () => {
                       rows={5}
                       cols={36}
                       placeholder="Type something here..."
-                    // Add any additional props or styling as needed
+                      // Add any additional props or styling as needed
                     />
                   )}
                 </div>
