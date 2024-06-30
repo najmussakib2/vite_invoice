@@ -1,12 +1,13 @@
 import { FormOutlined, DatabaseOutlined } from "@ant-design/icons";
-import { Layout, Menu, theme } from "antd";
+import { Layout, Menu } from "antd";
 import { Link, Outlet } from "react-router-dom";
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Footer, Sider } = Layout;
 
 const App = () => {
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
+  // const {
+  //   token
+  //   : { colorBgContainer},
+  // } = theme.useToken();
   return (
     <Layout>
       <Sider
@@ -44,12 +45,13 @@ const App = () => {
         />
       </Sider>
       <Layout>
-        <Header
+        {/* <Header
           style={{
             padding: 0,
-            background: colorBgContainer,
+            // background: colorBgContainer,
+            background: "#f3f4f6",
           }}
-        />
+        /> */}
         <Content
           style={{
             margin: "24px 16px 0",

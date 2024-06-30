@@ -1,14 +1,19 @@
-import { Table } from "antd";
-import { useGetAllInvoiceQuery } from "../../redux/api/invoice/invoiceApi";
+import { Table, Tag } from "antd";
+import {
+  useGetAllInvoiceQuery,
+} from "../../redux/api/invoice/invoiceApi";
 import { useState } from "react";
 import InvoiceModal from "../InvoiceModal";
 import SearchComp from "../usableCompo/SearchComp";
 import IPPagination from "../usableCompo/IPPagination";
+import { OrderStatus } from "../usableCompo/OrderStatus";
+import OrderTabs from "../usableCompo/OrderTabs";
 
 const AllInvoices = () => {
   const [open, setOpen] = useState(false);
   const [info, setInfo] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
   const [page, setPage] = useState(1);
 
   const searchQuery = [
@@ -28,11 +33,30 @@ const AllInvoices = () => {
     });
   }
 
+  if (activeTab !== "all") {
+    searchQuery.push({
+      name: "status",
+      value: activeTab,
+    });
+  }
+
   const {
     data: allData,
     isLoading,
     isFetching: isInvoicesFetching,
+    refetch: refetchAllInvoice
   } = useGetAllInvoiceQuery(searchQuery);
+
+    
+  const handleTabChange = (key) => {
+      if (key === "all") {
+        setActiveTab("all");
+        refetchAllInvoice();
+      } else {
+        setActiveTab(key);
+      }
+    };
+  console.log(allData);
 
   const columns = [
     {
@@ -59,6 +83,26 @@ const AllInvoices = () => {
       title: "Customer Address",
       dataIndex: "customer_address",
       key: "address",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (_, item) => (
+        <Tag
+          color={
+            item.status === OrderStatus.PENDING
+              ? "yellow"
+              : item.status === OrderStatus.READY
+                ? "blue"
+                : item.status === OrderStatus.DELIVERD
+                  ? "green"
+                    : "red"
+          }
+        >
+          {item.status}
+        </Tag>
+      ),
     },
     {
       title: "Items",
@@ -100,7 +144,12 @@ const AllInvoices = () => {
   return (
     <div>
       <div className="my-5">
-        <SearchComp style={{ width: 200 }} setSearchTerm={setSearchTerm} />
+        <SearchComp style={{ width: 200, marginBottom: "1.25rem" }} setSearchTerm={setSearchTerm} />
+        <OrderTabs
+
+              activeTab={activeTab}
+              handleTabChange={handleTabChange}
+            />
       </div>
       <Table
         columns={columns}
@@ -128,6 +177,8 @@ const AllInvoices = () => {
           isOpen={open}
           setIsOpen={setOpen}
           invoiceInfo={info}
+          refetch={refetchAllInvoice}
+          loading={isInvoicesFetching}
           items={info.items}
         />
       )}

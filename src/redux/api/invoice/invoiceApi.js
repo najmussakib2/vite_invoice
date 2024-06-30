@@ -5,7 +5,7 @@ export const invoice = createApi({
   reducerPath: "invoice",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://express-invoice.vercel.app/api/v1",
-    // baseUrl: "http://localhost:5000/api/v1",
+    // baseUrl: "http://localhost:2000/api/v1",
   }),
 
   endpoints: (builder) => ({
@@ -17,9 +17,6 @@ export const invoice = createApi({
       }),
     }),
 
-    // getAllInvoice: builder.query({
-    //   query: () => "/invoice",
-    // }),
 
     getAllInvoice: builder.query({
       query: (args) => {
@@ -42,16 +39,16 @@ export const invoice = createApi({
       }),
     }),
 
-    getSingleBanner: builder.query({
-      query: (id) => `/banner/${id}`,
-    }),
-
-    updateBanner: builder.mutation({
-      query: ({ id, ...updateData }) => ({
-        url: `/banner/${id}`,
-        method: "PUT",
-        body: updateData,
-      }),
+    updateStatus: builder.mutation({
+      query: ({ id, ...updateData }) => (
+        console.log(updateData),
+        console.log(id),
+        {
+          url: `/invoice/${id}`,
+          method: "PATCH",
+          body: updateData,
+        }
+      ),
     }),
 
     deleteBanner: builder.mutation({
@@ -66,7 +63,6 @@ export const invoice = createApi({
 export const {
   useCreateInvoiceMutation,
   useGetAllInvoiceQuery,
-  useGetSingleBannerQuery,
-  useUpdateBannerMutation,
+  useUpdateStatusMutation,
   useDeleteBannerMutation,
 } = invoice;

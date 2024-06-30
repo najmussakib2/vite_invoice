@@ -1,27 +1,31 @@
 /* eslint-disable react/prop-types */
 import { Fragment, useRef } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { toPng } from "html-to-image";
-import { jsPDF } from "jspdf";
 import printImg from "../img/printer-1598-svgrepo-com.svg";
 
-import { useCreateInvoiceMutation, useGetAllInvoiceQuery } from "../redux/api/invoice/invoiceApi";
+import {
+  useCreateInvoiceMutation,
+  useUpdateStatusMutation,
+} from "../redux/api/invoice/invoiceApi";
 import { useReactToPrint } from "react-to-print";
 import Invoice from "./Invoice";
+import { Button } from "antd";
 
 const InvoiceModal = ({
   isOpen,
   setIsOpen,
   invoiceInfo,
+  refetch,
   items,
   onAddNextInvoice,
 }) => {
   function closeModal() {
     setIsOpen(false);
   }
-  const [createInvoice] = useCreateInvoiceMutation();  
+  const [createInvoice] = useCreateInvoiceMutation();
 
-console.log("form 24",invoiceInfo.cashierInfo?.name)
+  const [updateStatus] = useUpdateStatusMutation();
+
   const info = {
     cashier_name: invoiceInfo.cashierInfo?.name || invoiceInfo.cashier_name,
     customer_name: invoiceInfo.customer_name,
@@ -35,81 +39,32 @@ console.log("form 24",invoiceInfo.cashierInfo?.name)
     due: invoiceInfo.due,
     items: items,
   };
-  // console.log(info)
-  const { refetch } = useGetAllInvoiceQuery();
+
   const addNextInvoiceHandler = async () => {
-    try{
+    try {
       const response = await createInvoice(info);
-      if(response.data.success === true){
+      console.log(response);
+      if (response.data.success === true) {
         refetch();
         setIsOpen(false);
         onAddNextInvoice();
       }
-    
-    }catch(err){
-      console.log(err)
+    } catch (err) {
+      console.log(err);
     }
   };
 
-  const SaveAsPDFHandler = async () => {
-    const dom = document.getElementById("print");
-    toPng(dom)
-      .then((dataUrl) => {
-        const img = new Image();
-        img.crossOrigin = "annoymous";
-        img.src = dataUrl;
-        img.onload = () => {
-          // Initialize the PDF.
-          const pdf = new jsPDF({
-            orientation: "landscape",
-            unit: "in",
-          });
-
-          // Define reused data
-          const imgProps = pdf.getImageProperties(img);
-          const imageType = imgProps.fileType;
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-
-          // Calculate the number of pages.
-          const pxFullHeight = imgProps.height;
-          const pxPageHeight = Math.floor((imgProps.width * 8.5) / 5.5);
-          const nPages = Math.ceil(pxFullHeight / pxPageHeight);
-
-          // Define pageHeight separately so it can be trimmed on the final page.
-          let pageHeight = pdf.internal.pageSize.getHeight();
-
-          // Create a one-page canvas to split up the full image.
-          const pageCanvas = document.createElement("canvas");
-          const pageCtx = pageCanvas.getContext("2d");
-          pageCanvas.width = imgProps.width;
-          pageCanvas.height = pxPageHeight;
-
-          for (let page = 0; page < nPages; page++) {
-            // Trim the final page to reduce file size.
-            if (page === nPages - 1 && pxFullHeight % pxPageHeight !== 0) {
-              pageCanvas.height = pxFullHeight % pxPageHeight;
-              pageHeight = (pageCanvas.height * pdfWidth) / pageCanvas.width;
-            }
-            // Display the page.
-            const w = pageCanvas.width;
-            const h = pageCanvas.height;
-            pageCtx.fillStyle = "white";
-            pageCtx.fillRect(0, 0, w, h);
-            pageCtx.drawImage(img, 0, page * pxPageHeight, w, h, 0, 0, w, h);
-
-            // Add the page to the PDF.
-            if (page) pdf.addPage();
-
-            const imgData = pageCanvas.toDataURL(`image/${imageType}`, 1);
-            pdf.addImage(imgData, imageType, 0, 0, pdfWidth, pageHeight);
-          }
-          // Output / Save
-          pdf.save(`invoice-${invoiceInfo.invoiceNumber}.pdf`);
-        };
-      })
-      .catch((error) => {
-        console.error("oops, something went wrong!", error);
-      });
+  const updateInvoiceStatusHandler = async (status) => {
+    try {
+      const response = await updateStatus({id: invoiceInfo._id, status }).unwrap();
+      console.log(response);
+      if (response.success === true) {
+        refetch();
+        setIsOpen(false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const date = new Date();
@@ -131,7 +86,7 @@ console.log("form 24",invoiceInfo.cashierInfo?.name)
     removeAfterPrint: true,
   });
 
-  console.log("134 invoice modal: ",invoiceInfo?.orderId || null)
+  console.log("134 invoice modal: ", invoiceInfo?.orderId || null);
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -170,9 +125,49 @@ console.log("form 24",invoiceInfo.cashierInfo?.name)
             leaveTo="opacity-0 scale-95"
           >
             <div className="my-8 inline-block w-full max-w-7xl transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all">
-              <div className="flex py-10 px-5" id="print" ref={contentToPrint}>
-                <Invoice invoiceInfo={invoiceInfo} copy={"Customer"} date={today} items={items} />
-                <Invoice invoiceInfo={invoiceInfo} copy={"Office"} date={today} items={items} />
+              <div className="flex justify-between">
+                <div id="jsonContainer">
+                  <pre>
+                    <code>{JSON.stringify(invoiceInfo, null, 2)}</code>
+                  </pre>
+                </div>
+                <div className="flex flex-col items-end gap-10">
+                  <Button onClick={closeModal}>x</Button>
+
+                  <Button className="mx-10"
+                  onClick={()=>updateInvoiceStatusHandler("deliverd")}
+                  >change status as delivered</Button>
+
+                  <Button className="mx-10"
+                  onClick={()=>updateInvoiceStatusHandler("ready_to_delivery")}
+                  >change status as ready to delivered</Button>
+                  <Button
+                  onClick={() => {
+                    handlePrint(null, () => contentToPrint.current);
+                  }}
+                  >
+                    <img src={printImg} alt="" />
+                  </Button>
+                </div>
+              </div>
+              <div
+                className="py-10 px-5 hidden print:block"
+                ref={contentToPrint}
+              >
+                <div className="flex" id="print">
+                  <Invoice
+                    invoiceInfo={invoiceInfo}
+                    copy={"Customer"}
+                    date={today}
+                    items={items}
+                  />
+                  <Invoice
+                    invoiceInfo={invoiceInfo}
+                    copy={"Office"}
+                    date={today}
+                    items={items}
+                  />
+                </div>
               </div>
               <div className="mt-4 flex space-x-2 px-4 pb-6">
                 <button
@@ -181,55 +176,35 @@ console.log("form 24",invoiceInfo.cashierInfo?.name)
                     handlePrint(null, () => contentToPrint.current);
                   }}
                 >
-                  
-                  
                   <img src={printImg} alt="" />
-                  
+
                   <span>Print</span>
                 </button>
 
-                <button
-                  className="flex w-full items-center justify-center space-x-1 rounded-md border border-blue-500 py-2 text-sm text-blue-500 shadow-sm hover:bg-blue-500 hover:text-white"
-                  onClick={SaveAsPDFHandler}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    />
-                  </svg>
-                  <span>Download</span>
-                </button>
-                {!invoiceInfo?._id?
+                {!invoiceInfo?._id ? (
                   <button
-                  onClick={addNextInvoiceHandler}
-                  className="flex w-full items-center justify-center space-x-1 rounded-md bg-blue-500 py-2 text-sm text-white shadow-sm hover:bg-blue-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                    onClick={addNextInvoiceHandler}
+                    className="flex w-full items-center justify-center space-x-1 rounded-md bg-blue-500 py-2 text-sm text-white shadow-sm hover:bg-blue-600"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 5l7 7-7 7M5 5l7 7-7 7"
-                    />
-                  </svg>
-                  <span>Next</span>
-                </button>:<></>
-                }
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                      />
+                    </svg>
+                    <span>Next</span>
+                  </button>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           </Transition.Child>

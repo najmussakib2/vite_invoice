@@ -3,6 +3,7 @@ import { useState } from "react";
 const InvoiceFileUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [data, setData] = useState();
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -25,7 +26,8 @@ const InvoiceFileUpload = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        console.log("File uploaded successfully:", data);
+        console.log("File uploaded successfully:", data?.data);
+        setData(data);
       })
       .catch((error) => console.error("Error uploading file:", error));
   };
@@ -47,6 +49,11 @@ const InvoiceFileUpload = () => {
         Upload
       </button>
       {isFileUploaded && <p>File uploaded successfully!</p>}
+      <div id="jsonContainer">
+        <pre>
+          <code>{JSON.stringify(data?.data, null, 2)}</code>
+        </pre>
+      </div>
     </div>
   );
 };
